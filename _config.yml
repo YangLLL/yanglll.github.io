@@ -104,4 +104,4 @@ theme: next # 当前主题名称，值为false时禁用主题
 deploy:
   type: 'git'
   repo: https://github.com/YangLLL/yanglll.github.io.git # github 仓库的路径
-  branch: master
+  branch: public
