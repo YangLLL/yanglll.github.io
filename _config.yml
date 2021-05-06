@@ -32,7 +32,7 @@ skip_render: # 跳过指定文件的渲染。匹配到的文件将会被不做�
 
 # Writing
 new_post_name: :title.md # 新文章的文件名
-default_layout: page # 预设布局
+default_layout: post # 预设布局
 titlecase: false # 把标题转换为 title case
 external_link:
   enable: true # 在新标签中打开链接
@@ -78,7 +78,7 @@ meta_generator: true
 ## Hexo uses Moment.js to parse and display date
 ## You can customize the date format as defined in
 ## http://momentjs.com/docs/#/displaying/format/
-date_format: YYYY-MM-DD
+date_format: YYYY.MM.DD
 time_format: HH:mm:ss
 ## updated_option supports 'mtime', 'date', 'empty'
 updated_option: 'mtime'
@@ -97,7 +97,8 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next # 当前主题名称，值为false时禁用主题
+theme: huxblog # 当前主题名称，值为false时禁用主题
+# github_username: YangLLL
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
