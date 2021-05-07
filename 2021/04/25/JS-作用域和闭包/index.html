@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          JS基础 - 作用域和闭包 - undefined
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/04/25/JS-作用域和闭包/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                <img src="/img/snoopy.png" alt="avatar" class="nav-avatar"/>
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://example.com/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/undefined')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JS基础 - 作用域和闭包</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        2021.04.25
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><h5 id="1-作用域是什么？"><a href="#1-作用域是什么？" class="headerlink" title="1. 作用域是什么？"></a>1. 作用域是什么？</h5><p>作用域是一套规则，这套规则用来管理引擎如何在当前作用域以及嵌套的子作用域中根据标识符名称进行变量查找。</p>
+<h5 id="2-作用域主要有两种作用域模型："><a href="#2-作用域主要有两种作用域模型：" class="headerlink" title="2. 作用域主要有两种作用域模型："></a>2. 作用域主要有两种作用域模型：</h5><p>第一种是最为普遍的，被大多数编程语言所采用的词法作用域；另外一种叫作动态作用域（比如 Bash 脚本、Perl 中的一些模式等在使用）<br>JavaScript采用的作用域模型是<strong>词法作用域模型</strong></p>
+<h2 id="词法作用域"><a href="#词法作用域" class="headerlink" title="词法作用域"></a>词法作用域</h2><h5 id="1-词法作用域"><a href="#1-词法作用域" class="headerlink" title="1. 词法作用域"></a>1. 词法作用域</h5><p>词法作用域就是定义在词法阶段的作用域。<br>无论函数在哪里被调用，也无论它如何被调用，词法作用域只由函数被声明时所处的位置决定</p>
+<h5 id="2-作用域查找"><a href="#2-作用域查找" class="headerlink" title="2. 作用域查找"></a>2. 作用域查找</h5><p> 作用域查找始终从运行时所处的最内部作用域开始，逐级向外或者说向上进行，直到遇见第一个匹配的标识符为止。</p>
+<h5 id="3-欺骗词法：-修改词法作用域的方法"><a href="#3-欺骗词法：-修改词法作用域的方法" class="headerlink" title="3. 欺骗词法： 修改词法作用域的方法"></a>3. 欺骗词法： 修改词法作用域的方法</h5><ul>
+<li>eval()<br>会将传入的字符串当做代码来执行。在程序中动态生成了代码，可以在运行期修改书写期的词法作用域</li>
+<li>with()<br>将一个对象的引用当作作用域来处理。with 可以将一个没有或有多个属性的对象处理为一个完全隔离的词法作用域，因此这个对 象的属性也会被处理为定义在这个作用域中的词法标识符。</li>
+</ul>
+<h2 id="函数作用域"><a href="#函数作用域" class="headerlink" title="函数作用域"></a>函数作用域</h2><h5 id="1-函数中的作用域"><a href="#1-函数中的作用域" class="headerlink" title="1. 函数中的作用域"></a>1. 函数中的作用域</h5><p>属于这个函数的全部变量都可以在整个函数范围内使用及复用。<br>函数作用域可以隐藏作用域中的变量和函数，避免同名标识符之间的冲突</p>
+<h5 id="2-隐藏内部实现"><a href="#2-隐藏内部实现" class="headerlink" title="2. 隐藏内部实现"></a>2. 隐藏内部实现</h5><p>规避冲突：</p>
+<h6 id="（1）全局命名空间"><a href="#（1）全局命名空间" class="headerlink" title="（1）全局命名空间"></a>（1）全局命名空间</h6><p>第三方库通常会在全局作用域中声明一个名字足够独特的变量，通常是一个对象。这个对象 被用作库的命名空间</p>
+<h6 id="（2）模块管理"><a href="#（2）模块管理" class="headerlink" title="（2）模块管理"></a>（2）模块管理</h6><p>通过依赖管理器 的机制将库的标识符显式地导入到另外一个特定的作用域中。这些工具利用作用域的规则强制所有标识符都不能注入到共享作用域中，而是保持在私有、无冲突的作用域 中，这样可以有效规避掉所有的意外冲突</p>
+<h5 id="3-函数表达式"><a href="#3-函数表达式" class="headerlink" title="3. 函数表达式:"></a>3. 函数表达式:</h5><p>具名函数表达式：**(function foo(){ .. })**，foo只能在 … 所代表的位置中 被访问，外部作用域则不行</p>
+<p>匿名函数表达式：**(function(){ .. })**</p>
+<p>立即执行函数表达式(IIFE):  <strong>(function foo(){ .. })()<strong>。改进后：</strong>(function(){ .. }())</strong></p>
+<h2 id="块作用域"><a href="#块作用域" class="headerlink" title="块作用域"></a>块作用域</h2><p>JS中的 if 、for语句不能创建块作用域，在其他语言中支持块作用域</p>
+<h5 id="1-with"><a href="#1-with" class="headerlink" title="1. with"></a>1. with</h5><p>用 with 从对象中创建出的作用域仅在 with 声明中有效。</p>
+<h5 id="2-try-catch"><a href="#2-try-catch" class="headerlink" title="2. try/catch"></a>2. try/catch</h5><p>try/catch 的 catch 分句会创建一个块作用域，其中声明的变量仅在 catch 内部有效。</p>
+<h5 id="3-let"><a href="#3-let" class="headerlink" title="3. let"></a>3. let</h5><p>let关键字可以将变量绑定到所在的任意作用域中，通常是 {…} 内部。<br>用 let 将变量附加在一个已经存在的块作用域上的行为是隐式的。<br>if (..) { let a = 2; } 会声明一个劫持了 if 的 { .. } 块的变量，并且将变量添加到这个块 中。<br>let 进行的声明不会在块作用域中进行提升。声明的代码被运行之前，声明并不“存在”</p>
+<h5 id="4-const"><a href="#4-const" class="headerlink" title="4. const"></a>4. const</h5><p>const也可以创建块作用域变量，但是值是固定的，不能修改</p>
+<h2 id="变量提升"><a href="#变量提升" class="headerlink" title="变量提升"></a>变量提升</h2><p>变量和函数的声明会从他们在代码中出现的位置移动到所在作用域的最上面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if(!(&#39;a&#39; in window)) &#123;</span><br><span class="line">    var a &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line">console.log(a) &#x2F;&#x2F; undefined</span><br><span class="line">上面的代码等价于</span><br><span class="line">var a;</span><br><span class="line">if(!(&#39;a&#39; in window)) &#123;</span><br><span class="line">    var a &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line">console.log(a)</span><br></pre></td></tr></table></figure>
+
+<p>‘a’ in window  一直为true，所以不会进行 a = 1 的操作</p>
+<p>函数和变量都会提升，但是函数会首先被提升，然后才是变量。遇到同名的，函数优先级更高</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">foo(); &#x2F;&#x2F; 1</span><br><span class="line"></span><br><span class="line">var foo;</span><br><span class="line"></span><br><span class="line">function foo() &#123;</span><br><span class="line">  console.log(1);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo &#x3D; function() &#123;</span><br><span class="line">  console.log(2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会输出1，不是2</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p><strong>1.当函数可以记住并访问所在的词法作用域，即使函数是在当前词法作用域之外执行，这时就产生了闭包。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function foo() &#123; </span><br><span class="line">    var a &#x3D; 2;</span><br><span class="line">    function bar() &#123; </span><br><span class="line">        console.log( a ); &#x2F;&#x2F; 2</span><br><span class="line">    &#125;</span><br><span class="line">    bar(); </span><br><span class="line">&#125;</span><br><span class="line">foo();</span><br></pre></td></tr></table></figure>
+
+<p>上面的不是闭包，bar() 对 a 的引用的方法，只是词法作用域的查找规则，并没有在作用域外部执行</p>
+<p>闭包的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function foo() &#123; </span><br><span class="line">    var a &#x3D; 2;</span><br><span class="line">    function bar() &#123; </span><br><span class="line">        console.log( a );</span><br><span class="line">    &#125;</span><br><span class="line">    return bar; </span><br><span class="line">&#125;</span><br><span class="line">var baz &#x3D; foo();</span><br><span class="line">baz(); &#x2F;&#x2F; 2</span><br></pre></td></tr></table></figure>
+
+<p>在执行 foo() 的时候返回了 bar，调用 baz() 相当于是调用了 bar() ，bar() 涵盖了 foo() 作用域，并且在 foo 外部调用的时候，也可以获取到 a 的值。bar() 一直保持着对foo函数作用域的引用，这个引用就叫闭包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var fn;</span><br><span class="line">function foo() &#123;</span><br><span class="line">    var a &#x3D; 2;</span><br><span class="line">    function baz() &#123; </span><br><span class="line">        console.log( a );</span><br><span class="line">    &#125;</span><br><span class="line">    fn &#x3D; baz; &#x2F;&#x2F; 将 baz 分配给全局变量 </span><br><span class="line">&#125;</span><br><span class="line">function bar() &#123;</span><br><span class="line">    fn(); &#x2F;&#x2F; 妈妈快看呀，这就是闭包!</span><br><span class="line">&#125;</span><br><span class="line">foo();</span><br><span class="line">bar(); &#x2F;&#x2F; 2</span><br></pre></td></tr></table></figure>
+
+<p>这也是闭包。无论通过什么方式将内部函数传递到所在作用域之外，他都会保持对原作用域的引用，无论在何处执行这个函数都会使用闭包。</p>
+<p><strong>2. 在定时器、事件监听器、 Ajax 请求、跨窗口通信、Web Workers 或者任何其他的异步(或者同步)任务中，只要使 用了回调函数，实际上就是在使用闭包。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function wait(message) &#123;</span><br><span class="line">    setTimeout(function timer() &#123; </span><br><span class="line">        console.log( message );</span><br><span class="line">    &#125;, 1000 );</span><br><span class="line">&#125;</span><br><span class="line">wait( &quot;Hello, closure!&quot; );</span><br></pre></td></tr></table></figure>
+
+<p>这是闭包，wait(..) 执行 1000 毫秒后，它的内部作用域并不会消失，timer 函数依然保有 wait(..)作用域的闭包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function setupBot(name, selector) &#123;</span><br><span class="line">    $( selector ).click( function activator() &#123;</span><br><span class="line">        console.log( &quot;Activating: &quot; + name ); </span><br><span class="line">    &#125; );</span><br><span class="line">&#125;</span><br><span class="line">setupBot( &quot;Closure Bot 1&quot;, &quot;#bot_1&quot; );</span><br></pre></td></tr></table></figure>
+
+<p>这也是闭包。</p>
+<h5 id="3-循环和闭包"><a href="#3-循环和闭包" class="headerlink" title="3. 循环和闭包"></a>3. 循环和闭包</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (var i&#x3D;1; i&lt;&#x3D;5; i++) &#123; </span><br><span class="line">    setTimeout( function timer() &#123;</span><br><span class="line">        console.log( i ); </span><br><span class="line">    &#125;, i*1000 );</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 输出 5 个 6</span><br></pre></td></tr></table></figure>
+
+<p>只有一个全局的 i，和不适用循环，直接调用了 5 次 timer() 是一样的。<br>要实现依次打印 1 ~ 5 ，要通过使用闭包这样改进：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for (var i&#x3D;1; i&lt;&#x3D;5; i++) &#123; </span><br><span class="line">    (function() &#123;</span><br><span class="line">        var j &#x3D; i;</span><br><span class="line">        setTimeout( function timer() &#123;</span><br><span class="line">            console.log( j ); </span><br><span class="line">        &#125;, j*1000 );</span><br><span class="line">    &#125;)(); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>let 可以用来劫持块级作用域，改成下面的形式也可以实现功能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for (let i&#x3D;1; i&lt;&#x3D;5; i++) &#123; </span><br><span class="line">    setTimeout( function timer() &#123;</span><br><span class="line">        console.log( i ); </span><br><span class="line">    &#125;, i*1000 );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="4-模块"><a href="#4-模块" class="headerlink" title="4. 模块"></a>4. 模块</h5><p>闭包可以用来实现模块模式。用闭包模拟私有方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function CoolModule() &#123;</span><br><span class="line">    var something &#x3D; &quot;cool&quot;;</span><br><span class="line">    var another &#x3D; [1, 2, 3];</span><br><span class="line">    function doSomething() &#123; </span><br><span class="line">        console.log( something );</span><br><span class="line">    &#125;</span><br><span class="line">    function doAnother() &#123;</span><br><span class="line">        console.log( another.join( &quot; ! &quot; ) );</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        doSomething: doSomething, doAnother: doAnother</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">var foo &#x3D; CoolModule(); </span><br><span class="line">foo.doSomething(); &#x2F;&#x2F; cool</span><br><span class="line">foo.doAnother(); &#x2F;&#x2F; 1 ! 2 ! 3</span><br></pre></td></tr></table></figure>
+
+<p>CoolModule()是一个函数，通过调用他来产生模块实例。<br>CoolModule() 返回一个用对象字面量语法 { key: value, … } 来表示的对象。这 个返回的对象中含有对内部函数而不是内部数据变量的引用。我们保持内部数据变量是隐 藏且私有的状态。可以将这个对象类型的返回值看作本质上是模块的公共 API</p>
+<p>模块模式必须具备两个条件：</p>
+<ul>
+<li>必须有外部的封装函数，该函数至少必须被调用一次（每次调用都会创建新的模块实例）</li>
+<li>封装函数必须返回至少一个内部函数，这样内部函数才能在私有作用域中形成闭包，并且可以访问或修改私有的状态</li>
+</ul>
+<p>模块的两个特征：</p>
+<ul>
+<li>为创建内部作用域而调用了一个包装函数;</li>
+<li>包装函数的返回值必须至少包括一个对内部函数的引用，这样就会创建涵盖整个包装函数内部作用域的闭 包。</li>
+</ul>
+<h5 id="5-现代模块机制"><a href="#5-现代模块机制" class="headerlink" title="5. 现代模块机制"></a>5. 现代模块机制</h5><p>大多数模块依赖加载器 / 管理器本质上都是将这种模块定义封装进一个友好的 API。</p>
+<h5 id="6-ES中的模块"><a href="#6-ES中的模块" class="headerlink" title="6. ES中的模块"></a>6. ES中的模块</h5><p>ES6 中为模块增加了一级语法支持。通过模块系统进行加载时，ES6 会将文件当作独立的模块来处理（一个文件一个模块）。每个模块都可以导入其他模块或特定的 API 成员，同样也可以导出自己的 API 成员。<br>bar.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">function hello(who) &#123;</span><br><span class="line">    return &quot;Let me introduce: &quot; + who;</span><br><span class="line">&#125;</span><br><span class="line">export hello;</span><br></pre></td></tr></table></figure>
+
+<p> foo.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 仅从 &quot;bar&quot; 模块导入 hello() </span><br><span class="line">import hello from &quot;bar&quot;;</span><br><span class="line">var hungry &#x3D; &quot;hippo&quot;;</span><br><span class="line">function awesome() &#123; </span><br><span class="line">    console.log(hello( hungry ).toUpperCase() );</span><br><span class="line">&#125;</span><br><span class="line">export awesome;</span><br></pre></td></tr></table></figure>
+
+<p>baz.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 导入完整的 &quot;foo&quot; 和 &quot;bar&quot; 模块</span><br><span class="line">module foo from &quot;foo&quot;; </span><br><span class="line">module bar from &quot;bar&quot;;</span><br><span class="line">console.log(bar.hello( &quot;rhino&quot; )); &#x2F;&#x2F; Let me introduce: rhino </span><br><span class="line">foo.awesome(); &#x2F;&#x2F; LET ME INTRODUCE: HIPPO</span><br></pre></td></tr></table></figure>
+
+<p>import 可以将一个或多个 API 导入到当前作用域中，并分别绑定到一个变量上。<br>module 会将所有的 API 导入，并绑定到一个变量上。<br>export 会将当前模块的标识符导出为公共 API 。<br>模块文件中的内容会被当作好像包含在作用域闭包中一样来处理</p>
+<h2 id="动态作用域"><a href="#动态作用域" class="headerlink" title="动态作用域"></a>动态作用域</h2><p>JavaScript 中的作用域就是词法作用域，词法作用域是一套如何寻找变量，并在何处会找到变量的规则。词法作用域最重要的特征是它的定义过程发生在代码的书写阶段。</p>
+<p>动态作用域并不关心函数和作用域是如何声明以及在何处声明的，只关心它们从何处调 用。</p>
+<p><strong>JavaScript 并不具有动态作用域。它只有词法作用域</strong></p>
+<h5 id="动态作用域和词法作用域的主要区别"><a href="#动态作用域和词法作用域的主要区别" class="headerlink" title="动态作用域和词法作用域的主要区别"></a>动态作用域和词法作用域的主要区别</h5><p>词法作用域是在写代码或者说定义时确定的，而动态作用域是在运行时确定的。(this 也是!)词法作用域关注函数在何处声明，而动态作用域关注函数从何处调用。</p>
+<h2 id="this词法"><a href="#this词法" class="headerlink" title="this词法"></a>this词法</h2><h5 id="1-this绑定"><a href="#1-this绑定" class="headerlink" title="1. this绑定"></a>1. this绑定</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">var obj &#x3D; &#123;</span><br><span class="line">    id: &quot;awesome&quot;,</span><br><span class="line">    cool: function coolFn() &#123; </span><br><span class="line">        console.log( this.id );</span><br><span class="line">    &#125; </span><br><span class="line">&#125;;</span><br><span class="line">var id &#x3D; &quot;not awesome&quot;</span><br><span class="line">obj.cool(); &#x2F;&#x2F; awesome</span><br><span class="line">setTimeout( obj.cool, 100 ); &#x2F;&#x2F; not awesome</span><br></pre></td></tr></table></figure>
+<p>setTimeout中调用时，cool() 函数丢失了同 this 之间的绑定。<br>解决办法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var obj &#x3D; &#123; </span><br><span class="line">    count: 0,</span><br><span class="line">    cool: function coolFn() &#123;</span><br><span class="line">        var self &#x3D; this;</span><br><span class="line">        if (self.count &lt; 1) &#123;</span><br><span class="line">            setTimeout( function timer()&#123;</span><br><span class="line">                self.count++;</span><br><span class="line">                console.log( &quot;awesome?&quot; ); </span><br><span class="line">            &#125;, 100 );</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.cool(); &#x2F;&#x2F; awesome？</span><br></pre></td></tr></table></figure>
+<p>使用了词法作用域的规则，self只是一个可以通过 词法作用域和闭包进行引用的标识符，不关心 this 绑定的过程中发生了什么</p>
+<h5 id="2-箭头函数"><a href="#2-箭头函数" class="headerlink" title="2. 箭头函数"></a>2. 箭头函数</h5><p>箭头函数不会创建自己的this,它只会从自己的作用域链的上一层继承this<br>使用ES6的箭头函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var obj &#x3D; &#123; </span><br><span class="line">    count: 0,</span><br><span class="line">    cool: function coolFn() &#123; </span><br><span class="line">        if (this.count &lt; 1) &#123;</span><br><span class="line">            setTimeout( () &#x3D;&gt; &#123; &#x2F;&#x2F; </span><br><span class="line">                console.log( &quot;awesome?&quot; ); </span><br><span class="line">            &#125;, 100 );</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.cool(); &#x2F;&#x2F; awesome?</span><br></pre></td></tr></table></figure>
+<p>箭头函数在涉及 this 绑定时的行为和普通函数的行为完全不一致。它放弃了所有普通 this 绑定的规则，取而代之的是用当前的词法作用域覆盖了 this 本来的值。当前作用域是 coolFn ，coolFn的this是obj</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/04/25/hello-world/" data-toggle="tooltip" data-placement="top" title="Hello World">&larr; 上一页</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">&copy; 2021 yanglll </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://example.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
