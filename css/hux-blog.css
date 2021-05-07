@@ -281,6 +281,7 @@ pre code {
   color: white;
   height: 56px;
   line-height: 25px;
+  padding: 10px;
 }
 .navbar-custom .navbar-brand:hover {
   color: rgba(255, 255, 255, 0.8);
@@ -305,7 +306,7 @@ pre code {
   }
   .navbar-custom .navbar-brand {
     color: white;
-    padding: 20px;
+    padding: 10px;
     line-height: 20px;
   }
   .navbar-custom .navbar-brand:hover,
@@ -950,3 +951,16 @@ body {
 .page-fullscreen footer .copyright a:hover {
   color: #ddd;
 }
+
+
+.nav-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+
+}
+.nav-avatar:hover {
+  cursor: pointer;
+}
+
+
