@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          JS-原型 - undefined
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/05/10/JS-原型/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                <img src="/img/snoopy.png" alt="avatar" class="nav-avatar"/>
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://example.com/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/undefined')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JS-原型</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        2021.05.10
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>每个对象都有一个 <strong>__proto__</strong> 属性，是对于其他对象的引用（就是它的构造函数的 prototype 对象）。在获取一个对象的属性时，如果在当前对象中没找到，就会沿着原型链向上查找。原型链的终点是 <strong>Object.prototype</strong></p>
+<p>使用 <strong>for..in</strong> 遍历对象时原理和查找原型链类似，任何可以通过原型链访问到 (并且是 enumerable)的属性都会被枚举</p>
+<h2 id="属性设置和屏蔽"><a href="#属性设置和屏蔽" class="headerlink" title="属性设置和屏蔽"></a>属性设置和屏蔽</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myObject.foo &#x3D; &quot;bar&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>如果属性名 foo 既出现在 myObject 中也出现在 myObject 的原型链上层，那 么就会发生屏蔽。myObject 中包含的 foo 属性会屏蔽原型链上层的所有 foo 属性，因为 myObject.foo 总是会选择原型链中最底层的 foo 属性。</p>
+<p>如果 foo 不直接存在于 myObject 中而是存在于原型链上层时， <strong>myObject.foo = “bar”</strong> 会出现三种情况：<br>（1）如果在原型链上层存在名为foo的普通数据访问属性并且没有被标记为只读(writable:true)，那就会直接在 myObject 中添加一个名为 foo 的新属性，它是屏蔽属性。<br>（2）如果在原型链上层存在foo，但是它被标记为只读(writable:false)，那么 无法修改已有属性或者在 myObject 上创建屏蔽属性。  如果运行在严格模式下，代码会 抛出一个错误。否则，这条赋值语句会被忽略。总之，不会发生屏蔽。(只读属性会阻止原型链下层 隐式创建(屏蔽)同名属性)<br>（3）如果在原型链上层存在foo并且它是一个setter，那就一定会 调用这个 setter。foo 不会被添加到myObject，也不会重新定义 foo 这个 setter。</p>
+<p><strong>隐式产生屏蔽：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">var anotherObject &#x3D; &#123; </span><br><span class="line">    a:2</span><br><span class="line">&#125;;</span><br><span class="line">var myObject &#x3D; Object.create( anotherObject );</span><br><span class="line">anotherObject.a; &#x2F;&#x2F; 2 </span><br><span class="line">myObject.a; &#x2F;&#x2F; 2</span><br><span class="line">anotherObject.hasOwnProperty( &quot;a&quot; ); &#x2F;&#x2F; true </span><br><span class="line">myObject.hasOwnProperty( &quot;a&quot; ); &#x2F;&#x2F; false</span><br><span class="line">myObject.a++; &#x2F;&#x2F; 隐式屏蔽! </span><br><span class="line">anotherObject.a; &#x2F;&#x2F; 2</span><br><span class="line">myObject.a; &#x2F;&#x2F; 3 </span><br><span class="line">myObject.hasOwnProperty( &quot;a&quot; ); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function Foo() &#123; </span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">&#125;</span><br><span class="line">var a &#x3D; new Foo();</span><br><span class="line">Object.getPrototypeOf( a ) &#x3D;&#x3D;&#x3D; Foo.prototype; &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<p>调用 new Foo() 时会创建 a，其中的一步就是给 a 一个内部的原型链接，关联到 Foo.prototype 指向的那个对象。</p>
+<p>函数本身并不是构造函数，然而，当你在普通的函数调用前面加上 new 关键字之后，就会把这个函数调用变成一个“构造函数调用”。实际上，new 会劫持所有普通函数并用构造对象的形式来调用它。<br>在 JavaScript 中对于“构造函数”最准确的解释是，所有带 new 的函数调用。<br>函数不是构造函数，但是当且仅当使用 new 时，函数调用会变成“构造函数调用”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function Foo(name) &#123; </span><br><span class="line">    this.name &#x3D; name;</span><br><span class="line">&#125;</span><br><span class="line">Foo.prototype.myName &#x3D; function() &#123; </span><br><span class="line">    return this.name;</span><br><span class="line">&#125;;</span><br><span class="line">var a &#x3D; new Foo( &quot;a&quot; );</span><br><span class="line">var b &#x3D; new Foo( &quot;b&quot; ); </span><br><span class="line">a.myName(); &#x2F;&#x2F; &quot;a&quot;</span><br><span class="line">b.myName(); &#x2F;&#x2F; &quot;b&quot;</span><br></pre></td></tr></table></figure>
+
+<p>看起来 a.constructor === Foo 为真意味着 a 确实有一个指向 Foo 的 .constructor 属性，但其实不是。<br>实际上，.constructor 被委托给了 Foo.prototype，而 Foo.prototype.constructor 默认指向 Foo  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function Foo() &#123; &#x2F;* .. *&#x2F; &#125;</span><br><span class="line">Foo.prototype &#x3D; &#123; &#x2F;* .. *&#x2F; &#125;; &#x2F;&#x2F; 创建一个新原型对象</span><br><span class="line">var a1 &#x3D; new Foo();</span><br><span class="line">a1.constructor &#x3D;&#x3D;&#x3D; Foo; &#x2F;&#x2F; false! </span><br><span class="line">a1.constructor &#x3D;&#x3D;&#x3D; Object; &#x2F;&#x2F; true!</span><br></pre></td></tr></table></figure>
+
+<p>a1 没有 constructor 属性，会委托给原型链上的 Foo.prototype，但是这个对象也没有.constructor 属性，会继续委托给原型链顶端的 Object.prototype，这个对象有 .constructor 属性，指向内置的 Object(..) 函数。</p>
+<p>.constructor 并不是一个不可变属性。它是不可枚举的，但是它的值是可写的(可以被修改)<br>也可以手动给 Foo.prototype 添加一个 .constructor 属性，不过这需要手动添加一个符合正常行为的不可枚举属性，如：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function Foo() &#123; &#x2F;* .. *&#x2F; &#125;</span><br><span class="line">Foo.prototype &#x3D; &#123; &#x2F;* .. *&#x2F; &#125;; &#x2F;&#x2F; 创建一个新原型对象</span><br><span class="line">&#x2F;&#x2F; 需要在 Foo.prototype 上“修复”丢失的 .constructor 属性 </span><br><span class="line">&#x2F;&#x2F; 新对象属性起到 Foo.prototype 的作用 </span><br><span class="line">Object.defineProperty( Foo.prototype, &quot;constructor&quot; , &#123;</span><br><span class="line">    enumerable: false,</span><br><span class="line">    writable: true,</span><br><span class="line">    configurable: true,</span><br><span class="line">    value: Foo &#x2F;&#x2F; 让 .constructor 指向 Foo</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="原型继承"><a href="#原型继承" class="headerlink" title="原型继承"></a>原型继承</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">function Foo(name) &#123; </span><br><span class="line">    this.name &#x3D; name;</span><br><span class="line">&#125;</span><br><span class="line">Foo.prototype.myName &#x3D; function() &#123; </span><br><span class="line">    return this.name;</span><br><span class="line">&#125;;</span><br><span class="line">function Bar(name,label) &#123; </span><br><span class="line">    Foo.call( this, name ); </span><br><span class="line">    this.label &#x3D; label;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 创建了一个新的 Bar.prototype 对象并关联到 Foo.prototype </span><br><span class="line">Bar.prototype &#x3D; Object.create( Foo.prototype );</span><br><span class="line">&#x2F;&#x2F; 注意!现在没有 Bar.prototype.constructor 了 </span><br><span class="line">&#x2F;&#x2F; 如果你需要这个属性的话可能需要手动修复一下它</span><br><span class="line">Bar.prototype.myLabel &#x3D; function() &#123; </span><br><span class="line">    return this.label;</span><br><span class="line">&#125;;</span><br><span class="line">var a &#x3D; new Bar( &quot;a&quot;, &quot;obj a&quot;);</span><br><span class="line">a.myName(); &#x2F;&#x2F; &quot;a&quot; </span><br><span class="line">a.myLabel(); &#x2F;&#x2F; &quot;obj a&quot;</span><br></pre></td></tr></table></figure>
+
+<p>调用 Object.create(..) 会凭空创建一个“新”对象，并把新对象内部的原型对象(__proto__)关联到你指定的对象，把元素的关联对象抛弃掉。</p>
+<p>下面是错误的做法：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 和你想要的机制不一样! </span><br><span class="line">Bar.prototype &#x3D; Foo.prototype;</span><br><span class="line">&#x2F;&#x2F; 基本上满足你的需求，但是可能会产生一些副作用</span><br><span class="line">Bar.prototype &#x3D; new Foo();</span><br></pre></td></tr></table></figure>
+
+<p><strong>Bar.prototype = Foo.prototype</strong> 并不会创建一个关联到 Bar.prototype 的新对象，它只是让 Bar.prototype 直接引用 Foo.prototype 对 象。如果修改  Bar.prototype ，会影响到  Foo.prototype 。</p>
+<p><strong>Bar.prototype = new Foo()</strong> 会创建一个关联到 Bar.prototype 的新对象，但是如果Foo 有一些副作用（比如写日志、修改状态、注册到其他对象、给 this 添加数据属性，等等），就会影响到 Bar() 的“后代”。</p>
+<p>ES6 添加了辅助函数 Object.setPrototypeOf(..)，可以用标准并且可靠的方法来修改关联。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; ES6 之前需要抛弃默认的 Bar.prototype</span><br><span class="line">Bar.ptototype &#x3D; Object.create( Foo.prototype );</span><br><span class="line">&#x2F;&#x2F; ES6 开始可以直接修改现有的 Bar.prototype </span><br><span class="line">Object.setPrototypeOf( Bar.prototype, Foo.prototype );</span><br></pre></td></tr></table></figure>
+
+<h2 id="判断关系"><a href="#判断关系" class="headerlink" title="判断关系"></a>判断关系</h2><p>使用 instanceof   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a instanceof Foo;</span><br></pre></td></tr></table></figure>
+
+<p>在 a 的整条原型链中是否有指向 Foo.prototype 的对象</p>
+<p>使用 isPrototypeOf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Foo.prototype.isPrototypeOf( a ); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象关联"><a href="#对象关联" class="headerlink" title="对象关联"></a>对象关联</h2><p>原型机制就是存在于对象中的一个内部链接，它会引用其他对象。<br>这个对象的作用是：如果在对象上没有找到需要的属性或者方法引用，引擎就会继续在原型对象(__proto__)关联的对象上进行查找。同理，如果在后者中也没有找到需要的引用就会继续查找它的原型对象，以此类推。这一系列对象的链接被称为“原型链”。</p>
+<p>创建关联：<strong>Object.create(..)</strong> 。<br>Object.create(null) 会创建一个拥有空(或者说null)__proto__链接的对象，这个对象无法进行委托</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/05/11/vue响应式/" data-toggle="tooltip" data-placement="top" title="vue响应式">&larr; 上一页</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2021/05/07/JS-This/" data-toggle="tooltip" data-placement="top" title="JS-This">下一页 &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">&copy; 2021 yanglll </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://example.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

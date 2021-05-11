@@ -13,11 +13,11 @@
 
     <title>
         
-          Hello World - undefined
+          vue响应式 - undefined
         
     </title>
 
-    <link rel="canonical" href="http://example.com/2021/04/25/hello-world/">
+    <link rel="canonical" href="http://example.com/2021/05/11/vue响应式/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -147,10 +147,10 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Hello World</h1>
+                    <h1>vue响应式</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
-                        2021.04.25
+                        2021.05.11
                     </span>
                 </div>
             </div>
@@ -169,19 +169,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+                <p>vue 响应式就是数据发生变化，会立刻触发视图的更新。<br>vue2.0是使用 <strong>Object.defineProperty()</strong> 来实现对 data 的监听。在渲染组件的时候，会收集依赖的数据，添加到 watcher 中。<br>对 data 的 value 进行 set 的时候，如果 data 里面的值发生了变化，就会通知 watcher，触发视图更新</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function defineObjProperty(data, key, value) &#123;</span><br><span class="line">  Object.defineProperty(data, key, &#123;</span><br><span class="line">    get() &#123;</span><br><span class="line">      return value</span><br><span class="line">    &#125;,</span><br><span class="line">    set(newValue) &#123;</span><br><span class="line">      if (newValue !&#x3D;&#x3D; value) &#123;</span><br><span class="line">        value &#x3D; newValue</span><br><span class="line">        &#x2F;&#x2F; 可以在这里更新视图</span><br><span class="line">        console.log(&#39;update value------&#39;, newValue)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
                 <hr>
@@ -190,13 +179,9 @@
 
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2021/05/07/JS-This/" data-toggle="tooltip" data-placement="top" title="JS-This">&larr; 上一页</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2021/04/25/JS-作用域和闭包/" data-toggle="tooltip" data-placement="top" title="JS基础 - 作用域和闭包">下一页 &rarr;</a>
+                            <a href="/2021/05/10/JS-原型/" data-toggle="tooltip" data-placement="top" title="JS-原型">下一页 &rarr;</a>
                         </li>
                     
                 </ul>
