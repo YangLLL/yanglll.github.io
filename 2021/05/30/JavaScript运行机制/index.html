@@ -13,11 +13,11 @@
 
     <title>
         
-          React组件生命周期 - undefined
+          JavaScript运行机制 - undefined
         
     </title>
 
-    <link rel="canonical" href="http://example.com/2021/05/21/React组件生命周期/">
+    <link rel="canonical" href="http://example.com/2021/05/30/JavaScript运行机制/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -147,10 +147,10 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>React组件生命周期</h1>
+                    <h1>JavaScript运行机制</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
-                        2021.05.21
+                        2021.05.30
                     </span>
                 </div>
             </div>
@@ -169,55 +169,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2 id="class-组件的生命周期"><a href="#class-组件的生命周期" class="headerlink" title="class 组件的生命周期"></a>class 组件的生命周期</h2><h3 id="挂载阶段"><a href="#挂载阶段" class="headerlink" title="挂载阶段"></a>挂载阶段</h3><ul>
-<li><p>constructor<br>初始化 props 和 state</p>
-</li>
-<li><p>componentWillMount<br>在组件首次渲染之前调用，用的比较少，首次渲染之前的逻辑可以放 constructor 中处理</p>
-</li>
-<li><p>render<br>组件渲染更新</p>
-</li>
-<li><p>componentDidMount<br>组件首次渲染之后调用，只会调用一次，可以在这里发请求</p>
-</li>
-</ul>
-<h3 id="更新阶段"><a href="#更新阶段" class="headerlink" title="更新阶段"></a>更新阶段</h3><ul>
-<li><p>componentWillReceiveProps(nextProps)<br>props 变化之后调用</p>
-</li>
-<li><p>shouldComponentUpdate(nextProps, nextState)<br>判断是否更新组件，返回 true 重新渲染，返回 false 不更新</p>
-</li>
-<li><p>componentWillUpdate()<br>组件更新之前调用</p>
-</li>
-<li><p>render</p>
-</li>
-<li><p>componentDidUpdate()<br>组件更新之后调用</p>
-</li>
-</ul>
-<h3 id="卸载阶段"><a href="#卸载阶段" class="headerlink" title="卸载阶段"></a>卸载阶段</h3><ul>
-<li>componentWillUnmount<br>组件销毁之前调用，可以做一些清理工作，如清除定时器，事件监听等</li>
-</ul>
-<h3 id="新加的生命周期函数"><a href="#新加的生命周期函数" class="headerlink" title="新加的生命周期函数"></a>新加的生命周期函数</h3><ul>
-<li><p>static getDerivedStateFromProps(nextProps, prevState)<br>会在调用 render 方法之前调用，并且在初始挂载及后续更新时都会被调用。它应返回一个对象来更新 state，如果返回 null 则不更新任何内容。<br>用来替代 componentWillReceiveProps，componentWillReceiveProps只会在父组件重新渲染的时候触发，getDerivedStateFromProps方法每次渲染之前都会触发（包括 props 和 state 更新)。</p>
-</li>
-<li><p>getSnapSotBeforeUpdate()<br>在最近一次渲染输出（提交到 DOM 节点）之前调用。使组件能在发生更改之前从 DOM 中捕获一些信息（例如，滚动位置）。此生命周期方法的任何返回值将作为参数传递给 componentDidUpdate()。<br>在 render 之后，DOM 更新之前调用，可以替代 componentWillUpdate</p>
-</li>
-</ul>
-<h3 id="过时的生命周期函数"><a href="#过时的生命周期函数" class="headerlink" title="过时的生命周期函数"></a>过时的生命周期函数</h3><ul>
-<li>componentWillMount：组件挂载之前调用，基本用不到，初始化 state 的操作可以在 constructor 中处理</li>
-<li>componentWillReceiveProps：会在已挂载的组件接收新的 props 之前被调用</li>
-<li>componentWillUpdate：当组件收到新的 props 或 state 时，会在渲染之前调用，初始渲染的时候不会调用</li>
-</ul>
-<h2 id="Hooks的生命周期"><a href="#Hooks的生命周期" class="headerlink" title="Hooks的生命周期"></a>Hooks的生命周期</h2><p>使用 useEffect 可以在函数组件中执行副作用操作。useEffect 会在每次渲染之后调用（第一次渲染，和后面更新都会调用），相当于 componentDidMount 和 componentDidUpdate</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">  &#x2F;&#x2F; ...副作用操作</span><br><span class="line">&#125;, dependency)</span><br></pre></td></tr></table></figure>
-<p>默认函数组件没有生命周期，使用 useEffect 可以模拟生命周期。</p>
-<ul>
-<li>如果只在挂载的时候执行一次，dependency 就传空数组 []，表示不依赖任何状态，props 和 state 变化不会重新执行useEffect</li>
-<li>模拟 componentDidUpdate：<ol>
-<li>dependency 不传任何参数，那每次更新都会重新执行 useEffect 中的代码</li>
-<li>dependency 传入依赖的 props 或者 state 属性，当前依赖变了之后，才会执行 useEffect 中的代码</li>
-</ol>
-</li>
-<li>如果要清除一些副作用，可以在 useEffect 中返回一个函数，React 会在执行清楚操作的时候调用这个函数。可以模拟 componentWillUnMount</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;开始监听&#39;) &#x2F;&#x2F; state,props改变时会执行</span><br><span class="line">    </span><br><span class="line">     &#x2F;&#x2F; 并不完全等同于 componentWillUnmount，props发生变化也会执行结束监听。</span><br><span class="line">     &#x2F;&#x2F; 返回的函数会在下一次 effect 执行之前被执行，不是只有被销毁的时候执行，update的时候也会执行</span><br><span class="line">    return () &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;结束监听&#39;) </span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+                <p>宏任务<br>微任务<br>async…await<br>promise 实现原理</p>
+
 
                 <hr>
 
@@ -225,13 +178,9 @@
 
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2021/05/27/浏览器输入url发生了什么/" data-toggle="tooltip" data-placement="top" title="浏览器输入url发生了什么?">&larr; 上一页</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2021/05/20/防抖和节流/" data-toggle="tooltip" data-placement="top" title="防抖和节流">下一页 &rarr;</a>
+                            <a href="/2021/05/27/浏览器输入url发生了什么/" data-toggle="tooltip" data-placement="top" title="浏览器输入url发生了什么?">下一页 &rarr;</a>
                         </li>
                     
                 </ul>
