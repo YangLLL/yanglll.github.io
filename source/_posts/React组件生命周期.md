@@ -7,7 +7,7 @@ tags:
 
 ### 挂载阶段
 - constructor
-  初始化 props 和 state
+  获取初始化 props 和 state
 
 - componentWillMount
   在组件首次渲染之前调用，用的比较少，首次渲染之前的逻辑可以放 constructor 中处理
@@ -78,3 +78,7 @@ useEffect(() => {
     }
 })
 ```
+
+
+
+## 为什么要新加两个生命周期函数，废弃老的生命周期函数
